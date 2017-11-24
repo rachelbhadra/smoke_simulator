@@ -1,0 +1,139 @@
+#stuff {
+	top: 50%;
+    left: 50%;
+    width: 430px;
+    transform: translate(-50%, -50%);
+	position: absolute;
+	align-items: center;
+	margin: auto;
+	width: 100%;
+}
+
+#text {
+	position: relative;
+	text-align: center;
+	margin: auto;
+	width: 430px;
+}
+
+#title {
+	margin: 0px;
+	width: 430px;
+}
+
+#pic, img {
+	position: relative;
+	border-radius: 50%;
+	width: 280px;
+	margin: auto;
+}
+
+#details {
+  width: 0%;
+  margin: 0px;
+  margin: auto;
+  letter-spacing: 5px;
+  overflow: hidden; 
+  white-space: nowrap;
+  border-right: .75px solid #6d6561;
+  animation: type 4s steps(30) 0.5s 1 forwards,
+  			 cursor 1s 4.5s 5 forwards;
+  -webkit-animation: type 4s steps(30) 0.5s 1 forwards,
+  			 cursor 1s 4.5s 5 forwards;
+  -moz-animation: type 4s steps(30) 0.5s 1 forwards,
+  			 cursor 1s 4.5s 5 forwards;
+  -o-animation: type 4s steps(30) 0.5s 1 forwards,
+  			 cursor 1s 4.5s 5 forwards;
+  -ms-animation: type 4s steps(30) 0.5s 1 forwards,
+  			 cursor 1s 4.5s 5 forwards;
+}
+
+@keyframes type {
+  from {
+  	 width: 0% 
+  }
+  to { 
+  	width: 100% 
+  }
+}
+
+@keyframes cursor {
+  from { 
+  	border-right: .75px solid #6d6561 
+  }
+  to {
+  	border-right: .75px solid transparent
+  }
+}
+
+@-webkit-keyframes type {
+  from {
+  	 width: 0% 
+  }
+  to { 
+  	width: 100% 
+  }
+}
+
+@-webkit-keyframes cursor {
+  from { 
+  	border-right: .75px solid #6d6561 
+  }
+  to {
+  	border-right: .75px solid transparent
+  }
+}
+
+@-moz-keyframes type {
+  from {
+  	 width: 0% 
+  }
+  to { 
+  	width: 100% 
+  }
+}
+
+@-moz-keyframes cursor {
+  from { 
+  	border-right: .75px solid #6d6561 
+  }
+  to {
+  	border-right: .75px solid transparent
+  }
+}
+
+@-o-keyframes type {
+  from {
+  	 width: 0% 
+  }
+  to { 
+  	width: 100% 
+  }
+}
+
+@-o-keyframes cursor {
+  from { 
+  	border-right: .75px solid #6d6561 
+  }
+  to {
+  	border-right: .75px solid transparent
+  }
+}
+
+@-ms-keyframes type {
+  from {
+  	 width: 0% 
+  }
+  to { 
+  	width: 100% 
+  }
+}
+
+@-ms-keyframes cursor {
+  from { 
+  	border-right: .75px solid #6d6561 
+  }
+  to {
+  	border-right: .75px solid transparent
+  }
+}

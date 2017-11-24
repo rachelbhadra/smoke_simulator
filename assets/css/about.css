@@ -1,0 +1,28 @@
+html {
+  background-color: #f9efef;
+}
+
+#stuff {
+	top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+	position: absolute;
+	align-items: center;
+	margin: auto;
+	width: 800px;
+}
+
+#text {
+	position: relative;
+	text-align: center;
+	margin: auto;
+}
+
+#title {
+	margin: 0px;
+}
+
+#details {
+  margin: 0px;
+  margin: auto;
+}
