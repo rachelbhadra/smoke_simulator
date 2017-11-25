@@ -4,23 +4,23 @@ $(document).ready(function() {
   display(1);
 
   function display(x) {
-    var projects = $("#stuff").children();
+    var projects = $("#stuff").children(); // jQuery Function Number 1
     for (var i = 0; i < end; i++) {
-      $(projects[i]).hide();
+      $(projects[i]).hide(); // jQuery Function Number 2
     }
-    $(projects[x-1]).show();
+    $(projects[x-1]).show(); // jQuery Function Number 3
     showDot(x-1); 
   }
 
   function showDot(x) {
-    $(".dot").removeClass("active");
-    $(".dot:eq(" + String(x) +")").addClass("active");
+    $(".dot").removeClass("active"); // jQuery Function Number 4
+    $(".dot:eq(" + String(x) +")").addClass("active"); // jQuery Function Number 5
   }
 
-  $("#next").click(function() {
+  $("#next").click(function() { // jQuery Function Number 6
     curr++;
     if (curr > 3) {
-      $("#next").css("opacity", 0.5);
+      $("#next").css("opacity", 0.5); // jQuery Function Number 7
       $("#prev").css("opacity", 1);
       curr = 3;
     } else {
