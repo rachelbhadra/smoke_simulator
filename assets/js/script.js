@@ -1,6 +1,6 @@
 $(document).ready(function() {
   let curr = 1;
-  let end = 3;
+  let end = 7;
   display(1);
 
   function display(x) {
@@ -19,10 +19,10 @@ $(document).ready(function() {
 
   $("#next").click(function() { // jQuery Function Number 6
     curr++;
-    if (curr > 3) {
+    if (curr > 7) {
       $("#next").css("opacity", 0.5); // jQuery Function Number 7
       $("#prev").css("opacity", 1);
-      curr = 3;
+      curr = 7;
     } else {
       $("#next").css("opacity", 1);
       $("#prev").css("opacity", 1);
@@ -64,6 +64,38 @@ $(document).ready(function() {
     $("#prev").css("opacity", 1);
     $("#next").css("opacity", 1);
     curr = 3;
+    display(curr);
+  });
+
+  $(".dot:eq(3)").click(function() {
+    $(this).addClass("active");
+    $("#prev").css("opacity", 1);
+    $("#next").css("opacity", 1);
+    curr = 4;
+    display(curr);
+  });
+
+  $(".dot:eq(4)").click(function() {
+    $(this).addClass("active");
+    $("#prev").css("opacity", 1);
+    $("#next").css("opacity", 1);
+    curr = 5;
+    display(curr);
+  });
+
+  $(".dot:eq(5)").click(function() {
+    $(this).addClass("active");
+    $("#prev").css("opacity", 1);
+    $("#next").css("opacity", 1);
+    curr = 6;
+    display(curr);
+  });
+
+  $(".dot:eq(6)").click(function() {
+    $(this).addClass("active");
+    $("#prev").css("opacity", 1);
+    $("#next").css("opacity", 1);
+    curr = 7;
     display(curr);
   });
 

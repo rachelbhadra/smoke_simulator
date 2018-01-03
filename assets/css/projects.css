@@ -21,6 +21,13 @@ html {
   height: 325px;
 }
 
+.video {
+  position: relative;
+  text-align: center;
+  margin: auto;
+  top: 10px;
+}
+
 .title {
   margin: 0px;
 }

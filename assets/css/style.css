@@ -37,9 +37,23 @@ h3 {
   font-weight: lighter;
 }
 
-p {
+h4 {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 22px;
+  color: #6d6561;
+  font-weight: lighter;
+}
+
+h5 {
   font-family: 'Assistant', sans-serif;
   font-size: 20px;
+  color: #6d6561;
+  font-weight: lighter;
+}
+
+p {
+  font-family: 'Assistant', sans-serif;
+  font-size: 18px;
   color: #6d6561;
   font-weight: lighter;
 }
