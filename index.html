@@ -92,7 +92,7 @@
 
 						$$f_{buoy} = (-\kappa d + \sigma (T - T_0))\mathbf{\hat{j}}$$
 
-				    	As the temperature of the smoke increases, the buoyant force increases since heat rises. As the density of the smoke increases, the smoke becomes heavier and the buoyant force decreases, causing it to sink. By adjusting the smoke temperature value added by the user, we can see the changes in the smoke's behavior. When we increase the smoke temperature, the smoke rises more rapidly. When we decrease the smoke temperature, the smoke rises only slightly before sinking.
+				    	As the temperature of the smoke increases, the buoyant force increases, since heat rises. As the density of the smoke increases, the smoke becomes heavier and the buoyant force decreases, causing it to sink. By adjusting the smoke temperature value added by the user, we can see the changes in the smoke's behavior. When we increase the smoke temperature, the smoke rises more rapidly. When we decrease the smoke temperature, the smoke rises only slightly before sinking.
 				    </p>
 				    <div class="pic"><img src="assets/img/buoyancy.png"></div>
 				</div>
@@ -156,11 +156,11 @@
 
 		<h5 class = subsection2 align="middle">Problems</h2>
 		<p class="info">
-			Once we had our initial framework, the bulk of our  problems with this project arose when attempting to debug our WebGL shaders. There is not a clear means for doing so, and getting them to work properly required a lot of trial and error on our part. Another issue we had with our initial simulation was that it was very, very slow in reacting to the user input. We realized that this was because we were rendering our results at screen resolution, and maintaining this high resolution was dramatically hindering our response time. To fix this, we downsampled the screen to a much lower, fixed resolution, allowing out simulation to run much faster and react to the user immediately. This lower resolution is essentially unnoticeable in our visualization.
+			Once we had our initial framework, the bulk of our  problems with this project arose when attempting to debug our WebGL shaders. There is not a clear means for doing so, and getting them to work properly required a lot of trial and error on our part. Another issue we had with our initial simulation was that it was very, very slow in reacting to the user input. We realized that this was because we were rendering our results at screen resolution, and maintaining this high resolution was dramatically hindering our response time. To fix this, we downsampled the screen to a much lower, fixed resolution, allowing our simulation to run much faster and react to the user immediately. This lower resolution is essentially unnoticeable in our visualization.
 		</p>
 		<h5 class = subsection2 align="middle">Lessons</h2>
 		<p class="info">
-			Working on this project gave us valuable exposure to WebGL shaders and rendering, especially the aforementioned debugging. Additionally, we have gained insight in and experience with one type of approach for rendering simulations in 2-dimensions. Using two-sided slabs in conjunction with a shader pipeline simplified the process of storing and manipulating smoke information, which allowed us to focus more heavily on the shaders themselves.
+			Working on this project gave us valuable exposure to WebGL shaders and rendering, especially the aforementioned debugging. Additionally, we have gained insight and experience with one type of approach for rendering simulations in 2-dimensions. Using two-sided slabs in conjunction with a shader pipeline simplified the process of storing and manipulating smoke information, which allowed us to focus more heavily on the shaders themselves.
 		</p>
 
 		<div id="results">
@@ -177,7 +177,7 @@
 				<b>Vorticity (Curl):</b>  Adjust how much additional curling is added to the smoke<br/><br/>
 				<b>Color:</b>  Choose between a constant smoke color, color that changes based on a cosine function, and color that changes based on the velocity of the smoke.<br/><br/>
 				<b>Radius:</b>  Adjust the radius of the smoke being created on each mouse click<br/><br/>
-				<b>Boundaries:</b>  Enable boundaries at the edge of the screen. Instead of floating away, the smoke with hit the edges and bounce back, dissipating within the confines of the screen.
+				<b>Boundaries:</b>  Enable boundaries at the edge of the screen. Instead of floating away, the smoke will hit the edges and bounce back, dissipating within the confines of the screen.
 			</p>
 			<h5 class = subsection2 align="middle">Demo</h2>
 			<video style="display:block; margin: 0 auto; object-fit: inherit;" height=500 width=800 controls="controls" preload="none" onclick="this.paused ? this.play() : this.pause();" poster="assets/img/poster.png">
