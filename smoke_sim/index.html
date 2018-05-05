@@ -1,0 +1,290 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>CS184</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
+    <script type="text/javascript" src="GUI/dat.gui.min.js"></script>
+    <style>
+        body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <script id="Advect" type="shader-code">
+        precision mediump float;
+        uniform vec2 res;//The width and height of our screen
+        uniform sampler2D velocityField;//Our input texture
+        uniform sampler2D advectionField;
+        uniform float dissipation;
+
+        vec2 bilerp(sampler2D texture, vec2 p)
+        {
+            // add 0.5 for center of pixel
+            float s = p.x - (floor(p.x - 0.5) + 0.5);
+            float t = p.y - (floor(p.y - 0.5) + 0.5);
+
+            vec4 uv;
+            uv.xy = (floor(p - 0.5) + 0.5) / res.xy;
+            uv.zw= (floor(p - 0.5) + 1.5) / res.xy;
+
+            vec2 u00 = texture2D(texture, uv.xy).xy;
+            vec2 u10 = texture2D(texture, uv.zy).xy;
+
+            vec2 u0 = mix(u00, u10, s);
+
+            vec2 u01 = texture2D(texture, uv.xw).xy;
+            vec2 u11 = texture2D(texture, uv.zw).xy;
+
+            vec2 u1 =  mix(u01, u11, s);
+
+            return mix(u0, u1, t);
+        }
+
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            vec2 p = gl_FragCoord.xy - texture2D(velocityField, pixel).xy;
+            gl_FragColor = vec4(dissipation * bilerp(advectionField, p), 0.0, 1.0);
+        }
+    </script>
+    <script id="ExternalVelocity" type="shader-code">
+        uniform vec2 res;//The width and height of our screen
+        uniform sampler2D bufferTexture;//Our input texture
+        uniform vec3 smokeSource;//The x,y are the posiiton. The z is the power/density
+        uniform vec2 sourceVelocity;
+        uniform float radius;
+
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            float dist = distance(smokeSource.xy,gl_FragCoord.xy);
+            vec2 smoke = smokeSource.z * max(radius-dist,0.0) * sourceVelocity / res.xy;
+            gl_FragColor = vec4(texture2D(bufferTexture, pixel).xy + smoke, 0.0, 1.0);
+        }
+    </script>
+    <script id="ExternalTemperature" type="shader-code">
+        uniform vec2 res;//The width and height of our screen
+        uniform sampler2D bufferTexture;//Our input texture
+        uniform vec3 smokeSource;//The x,y are the posiiton. The z is the power/density
+        uniform float temp;
+        uniform float radius;
+
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            float dist = distance(smokeSource.xy,gl_FragCoord.xy);
+            float smoke = smokeSource.z * max(radius-dist,0.0) * temp;
+            gl_FragColor = vec4(texture2D(bufferTexture, pixel).x + smoke, 0.0, 0.0, 1.0);
+        }
+    </script>
+    <script id="ExternalDensity" type="shader-code">
+        uniform vec2 res;//The width and height of our screen
+        uniform sampler2D bufferTexture;//Our input texture
+        uniform vec3 smokeSource;//The x,y are the posiiton. The z is the power/density
+        uniform vec3 color;
+        uniform float radius;
+
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            float dist = distance(smokeSource.xy,gl_FragCoord.xy);
+            vec3 smoke = vec3(smokeSource.z * max(radius-dist,0.0)/ res.xy, 0.0) * color;
+            gl_FragColor = vec4(texture2D(bufferTexture, pixel).xyz + smoke, 1.0);
+        }
+    </script>
+    <script id="Draw" type="shader-code">
+        precision mediump float;
+        uniform vec2 res;
+        uniform sampler2D bufferTexture;
+        uniform vec3 bias;
+        uniform vec3 scale;
+
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            gl_FragColor = vec4(bias + scale * texture2D(bufferTexture, pixel).xyz, 1.0);
+        }
+    </script>
+    <script id="Jacobi" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D x;
+        uniform sampler2D b;
+        uniform float alpha;
+        uniform float beta;
+
+        void main() {
+            vec2 istep = vec2(1.0 / res.x, 0.0);
+            vec2 jstep = vec2(0.0, 1.0 / res.y);
+            vec2 ij = gl_FragCoord.xy / res.xy;
+
+            gl_FragColor = vec4( (texture2D(x, ij - istep).x + texture2D(x, ij + istep).x + texture2D(x, ij + jstep).x + texture2D(x, ij - jstep).x + alpha * texture2D(b, ij).x) / beta, 0.0, 0.0, 1.0);
+
+
+        }
+    </script>
+    <script id="Divergence" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D u;
+        uniform float dx;
+        uniform float dy;
+
+        void main() {
+            vec2 istep = vec2(1.0 / res.x, 0.0);
+            vec2 jstep = vec2(0.0, 1.0 / res.y);
+            vec2 ij = gl_FragCoord.xy / res.xy;
+
+            float uterm = (texture2D(u, ij + istep).x - texture2D(u, ij - istep).x) / (2.0 * dx);
+            float vterm = (texture2D(u, ij + jstep).y - texture2D(u, ij - jstep).y) / (2.0 * dy);
+
+            gl_FragColor = vec4(uterm + vterm, 0.0, 0.0, 1.0);
+
+        }
+    </script>
+    <script id="SubtractGradient" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D w;
+        uniform sampler2D p;
+        uniform float dx;
+        uniform float dy;
+
+        void main() {
+            vec2 istep = vec2(1.0 / res.x, 0.0);
+            vec2 jstep = vec2(0.0, 1.0 / res.y);
+            vec2 ij = gl_FragCoord.xy / res.xy;
+
+            vec2 gradient = vec2((texture2D(p, ij + istep).x - texture2D(p, ij - istep).x) / (2.0 * dx), (texture2D(p, ij + jstep).x - texture2D(p, ij - jstep).x) / (2.0 * dy));
+
+            gl_FragColor = vec4(texture2D(w, ij).xy - gradient, 0.0, 1.0);
+
+        }
+    </script>
+    <script id="Buoyancy" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D velocityField;
+        uniform sampler2D temperatureField;
+        uniform sampler2D densityField;
+        uniform float ambientTemperature;
+        uniform float sigma;
+        uniform float kappa;
+
+        void main() {
+            vec2 pixel = gl_FragCoord.xy / res.xy;
+            float t = texture2D(temperatureField, pixel).x;
+            vec4 v = texture2D(velocityField, pixel);
+
+            gl_FragColor = v;
+
+            //if (t > ambientTemperature) {
+                float d = texture2D(densityField, pixel).x;
+                gl_FragColor += vec4(0.0, sigma * (t - ambientTemperature) - d * kappa, 0.0, 1.0);
+            //}
+
+
+        }
+    </script>
+    <script id="Curl" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D velocityField;
+        uniform float dx;
+        uniform float dy;
+
+        void main() {
+            vec2 istep = vec2(1.0 / res.x, 0.0);
+            vec2 jstep = vec2(0.0, 1.0 / res.y);
+            vec2 ij = gl_FragCoord.xy / res.xy;
+
+            float dvdx = (texture2D(velocityField, ij + istep).y - texture2D(velocityField, ij - istep).y) / (2.0 * dx);
+            float dudy = (texture2D(velocityField, ij + jstep).x - texture2D(velocityField, ij - jstep).x) / (2.0 * dy);
+
+            gl_FragColor = vec4(dvdx - dudy, 0.0, 0.0, 1.0);
+
+
+        }
+    </script>
+    <script id="VorticityConf" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D velocityField;
+        uniform sampler2D curlField;
+        uniform float eps;
+        uniform float dt;
+        uniform float dx;
+        uniform float dy;
+        uniform float weight;
+        uniform float boundary;
+
+        void main() {
+            vec2 istep = vec2(1.0 / res.x, 0.0);
+            vec2 jstep = vec2(0.0, 1.0 / res.y);
+            vec2 ij = gl_FragCoord.xy / res.xy;
+
+            float etaX = (abs(texture2D(curlField, ij + istep).x) - abs(texture2D(curlField, ij - istep).x)) / (2.0 * dx);
+            float etaY = (abs(texture2D(curlField, ij + jstep).x) - abs(texture2D(curlField, ij - jstep).x)) / (2.0 * dy);
+            vec2 force = vec2(0.0);
+            if (abs(etaX) > eps && abs(etaY) > eps) {
+
+                vec2 psi = vec2(etaX / abs(etaX), etaY / abs(etaY));
+                vec2 vorticity = texture2D(curlField, ij).xy;
+                vec2 cross = vec2(psi.y * vorticity.x, psi.x * vorticity.y * -1.0);
+                force = cross * dt;
+            }
+            vec2 velocity = texture2D(velocityField, ij).xy;
+            gl_FragColor = vec4(velocity + weight * force, 0.0, 1.0);
+
+
+            if (boundary > 0.1) {
+                if (gl_FragCoord.x <= 1.5 || gl_FragCoord.x >= (res.x - 1.5) || gl_FragCoord.y <= 1.5 || gl_FragCoord.y >= (res.y - 1.5)){
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+            }
+        }
+    </script>
+    <script id="Boundary" type="shader-code">
+        uniform vec2 res;
+        uniform sampler2D read;
+        uniform float scale;
+        uniform vec2 xloffset;
+        uniform vec2 xroffset;
+        uniform vec2 yboffset;
+        uniform vec2 ytoffset;
+
+        uniform float density;
+
+        void main() {
+            if (gl_FragCoord.x <= 1.5){
+                gl_FragColor = vec4(scale * texture2D(read, (gl_FragCoord.xy + xloffset) / res.xy).xy, 0.0, 1.0);
+                if (density > 0.1) {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+            } else if (gl_FragCoord.x >= (res.x - 1.5)) {
+                gl_FragColor = vec4(scale * texture2D(read, (gl_FragCoord.xy + xroffset) / res.xy).xy, 0.0, 1.0);
+                if (density > 0.1) {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+            } else if (gl_FragCoord.y <= 1.5) {
+                gl_FragColor = vec4(scale * texture2D(read, (gl_FragCoord.xy + yboffset) / res.xy).xy, 0.0, 1.0);
+                if (density > 0.1) {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+            } else if (gl_FragCoord.y >= (res.y - 1.5)) {
+                gl_FragColor = vec4(scale * texture2D(read, (gl_FragCoord.xy + ytoffset) / res.xy).xy, 0.0, 1.0);
+                if (density > 0.1) {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                }
+            } else {
+                gl_FragColor = vec4(texture2D(read, gl_FragCoord.xy / res.xy).xyz, 1.0);
+            }
+
+        }
+            
+    </script>
+    <script src="js/Slab.js"></script>
+    <script src="js/Advect.js"></script>
+    <script src="js/ExternalVelocity.js"></script>
+    <script src="js/ExternalDensity.js"></script>
+    <script src="js/ExternalTemperature.js"></script>
+    <script src="js/Draw.js"></script>
+    <script src="js/Buoyancy.js"></script>
+    <script src="js/Jacobi.js"></script>
+    <script src="js/Divergence.js"></script>
+    <script src="js/SubtractGradient.js"></script>
+    <script src="js/VorticityConf.js"></script>
+    <script src="js/Curl.js"></script>
+    <script src="js/Boundary.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

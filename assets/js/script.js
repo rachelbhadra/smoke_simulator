@@ -1,6 +1,6 @@
 $(document).ready(function() {
   let curr = 1;
-  let end = 7;
+  let end = 6;
   display(1);
 
   function display(x) {
@@ -19,10 +19,10 @@ $(document).ready(function() {
 
   $("#next").click(function() { // jQuery Function Number 6
     curr++;
-    if (curr > 7) {
+    if (curr > end) {
       $("#next").css("opacity", 0.5); // jQuery Function Number 7
       $("#prev").css("opacity", 1);
-      curr = 7;
+      curr = end;
     } else {
       $("#next").css("opacity", 1);
       $("#prev").css("opacity", 1);
@@ -91,12 +91,5 @@ $(document).ready(function() {
     display(curr);
   });
 
-  $(".dot:eq(6)").click(function() {
-    $(this).addClass("active");
-    $("#prev").css("opacity", 1);
-    $("#next").css("opacity", 1);
-    curr = 7;
-    display(curr);
-  });
 
 });
